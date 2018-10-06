@@ -1,7 +1,9 @@
+<<<<<<< HEAD
 # Created by https://www.gitignore.io/api/sdcc
 
 ### Sdcc ###
-# SDCC stuff
+=======
+>>>>>>> 33f5fe851824d9c7659ded6902fabb58425f201b
 *.lnk
 *.lst
 *.map
@@ -9,6 +11,9 @@
 *.rel
 *.rst
 *.sym
+<<<<<<< HEAD
 
 
 # End of https://www.gitignore.io/api/sdcc
+=======
+>>>>>>> 33f5fe851824d9c7659ded6902fabb58425f201b
