@@ -1,0 +1,203 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ANSI-C Compiler
+                                      3 ; Version 3.7.0 #10231 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module mcp23017
+                                      6 	.optsdcc -mstm8
+                                      7 	
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _i2c_read
+                                     12 	.globl _i2c_write_addr
+                                     13 	.globl _i2c_write
+                                     14 	.globl _i2c_stop
+                                     15 	.globl _i2c_start
+                                     16 	.globl _i2c_clear
+                                     17 	.globl _init_mcp23017
+                                     18 	.globl _backlight_on
+                                     19 	.globl _backlight_off
+                                     20 ;--------------------------------------------------------
+                                     21 ; ram data
+                                     22 ;--------------------------------------------------------
+                                     23 	.area DATA
+                                     24 ;--------------------------------------------------------
+                                     25 ; ram data
+                                     26 ;--------------------------------------------------------
+                                     27 	.area INITIALIZED
+                                     28 ;--------------------------------------------------------
+                                     29 ; absolute external ram data
+                                     30 ;--------------------------------------------------------
+                                     31 	.area DABS (ABS)
+                                     32 ;--------------------------------------------------------
+                                     33 ; global & static initialisations
+                                     34 ;--------------------------------------------------------
+                                     35 	.area HOME
+                                     36 	.area GSINIT
+                                     37 	.area GSFINAL
+                                     38 	.area GSINIT
+                                     39 ;--------------------------------------------------------
+                                     40 ; Home
+                                     41 ;--------------------------------------------------------
+                                     42 	.area HOME
+                                     43 	.area HOME
+                                     44 ;--------------------------------------------------------
+                                     45 ; code
+                                     46 ;--------------------------------------------------------
+                                     47 	.area CODE
+                                     48 ;	../src/mcp23017.c: 12: uint8_t init_mcp23017() {
+                                     49 ;	-----------------------------------------
+                                     50 ;	 function init_mcp23017
+                                     51 ;	-----------------------------------------
+      008982                         52 _init_mcp23017:
+                                     53 ;	../src/mcp23017.c: 14: i2c_clear();
+      008982 CD 80 A1         [ 4]   54 	call	_i2c_clear
+                                     55 ;	../src/mcp23017.c: 15: if (i2c_start())
+      008985 CD 80 AA         [ 4]   56 	call	_i2c_start
+      008988 4D               [ 1]   57 	tnz	a
+      008989 26 03            [ 1]   58 	jrne	00110$
+      00898B CC 8A 15         [ 2]   59 	jp	00102$
+      00898E                         60 00110$:
+                                     61 ;	../src/mcp23017.c: 17: i2c_write_addr(MCP23017_ADDR + I2C_WRITE);
+      00898E 4B 40            [ 1]   62 	push	#0x40
+      008990 CD 80 FC         [ 4]   63 	call	_i2c_write_addr
+      008993 84               [ 1]   64 	pop	a
+                                     65 ;	../src/mcp23017.c: 18: i2c_write(0x00);  // gpioA as output
+      008994 4B 00            [ 1]   66 	push	#0x00
+      008996 CD 80 E4         [ 4]   67 	call	_i2c_write
+      008999 84               [ 1]   68 	pop	a
+                                     69 ;	../src/mcp23017.c: 19: i2c_write(0x00);
+      00899A 4B 00            [ 1]   70 	push	#0x00
+      00899C CD 80 E4         [ 4]   71 	call	_i2c_write
+      00899F 84               [ 1]   72 	pop	a
+                                     73 ;	../src/mcp23017.c: 20: i2c_stop();
+      0089A0 CD 80 C7         [ 4]   74 	call	_i2c_stop
+                                     75 ;	../src/mcp23017.c: 21: i2c_start();
+      0089A3 CD 80 AA         [ 4]   76 	call	_i2c_start
+                                     77 ;	../src/mcp23017.c: 22: i2c_write_addr(MCP23017_ADDR + I2C_WRITE);
+      0089A6 4B 40            [ 1]   78 	push	#0x40
+      0089A8 CD 80 FC         [ 4]   79 	call	_i2c_write_addr
+      0089AB 84               [ 1]   80 	pop	a
+                                     81 ;	../src/mcp23017.c: 23: i2c_write(0x01);  // gpioB as input
+      0089AC 4B 01            [ 1]   82 	push	#0x01
+      0089AE CD 80 E4         [ 4]   83 	call	_i2c_write
+      0089B1 84               [ 1]   84 	pop	a
+                                     85 ;	../src/mcp23017.c: 24: i2c_write(0xff);
+      0089B2 4B FF            [ 1]   86 	push	#0xff
+      0089B4 CD 80 E4         [ 4]   87 	call	_i2c_write
+      0089B7 84               [ 1]   88 	pop	a
+                                     89 ;	../src/mcp23017.c: 25: i2c_stop();
+      0089B8 CD 80 C7         [ 4]   90 	call	_i2c_stop
+                                     91 ;	../src/mcp23017.c: 26: i2c_start();
+      0089BB CD 80 AA         [ 4]   92 	call	_i2c_start
+                                     93 ;	../src/mcp23017.c: 27: i2c_write_addr(MCP23017_ADDR + I2C_WRITE);
+      0089BE 4B 40            [ 1]   94 	push	#0x40
+      0089C0 CD 80 FC         [ 4]   95 	call	_i2c_write_addr
+      0089C3 84               [ 1]   96 	pop	a
+                                     97 ;	../src/mcp23017.c: 28: i2c_write(0x0d);  // gpioB has internal pull-ups
+      0089C4 4B 0D            [ 1]   98 	push	#0x0d
+      0089C6 CD 80 E4         [ 4]   99 	call	_i2c_write
+      0089C9 84               [ 1]  100 	pop	a
+                                    101 ;	../src/mcp23017.c: 29: i2c_write(0xff);
+      0089CA 4B FF            [ 1]  102 	push	#0xff
+      0089CC CD 80 E4         [ 4]  103 	call	_i2c_write
+      0089CF 84               [ 1]  104 	pop	a
+                                    105 ;	../src/mcp23017.c: 30: i2c_stop();
+      0089D0 CD 80 C7         [ 4]  106 	call	_i2c_stop
+                                    107 ;	../src/mcp23017.c: 31: i2c_start();
+      0089D3 CD 80 AA         [ 4]  108 	call	_i2c_start
+                                    109 ;	../src/mcp23017.c: 32: i2c_write_addr(MCP23017_ADDR + I2C_WRITE);
+      0089D6 4B 40            [ 1]  110 	push	#0x40
+      0089D8 CD 80 FC         [ 4]  111 	call	_i2c_write_addr
+      0089DB 84               [ 1]  112 	pop	a
+                                    113 ;	../src/mcp23017.c: 33: i2c_write(0x03);  // gpioB has reversed polarity
+      0089DC 4B 03            [ 1]  114 	push	#0x03
+      0089DE CD 80 E4         [ 4]  115 	call	_i2c_write
+      0089E1 84               [ 1]  116 	pop	a
+                                    117 ;	../src/mcp23017.c: 34: i2c_write(0xff);
+      0089E2 4B FF            [ 1]  118 	push	#0xff
+      0089E4 CD 80 E4         [ 4]  119 	call	_i2c_write
+      0089E7 84               [ 1]  120 	pop	a
+                                    121 ;	../src/mcp23017.c: 35: i2c_stop();
+      0089E8 CD 80 C7         [ 4]  122 	call	_i2c_stop
+                                    123 ;	../src/mcp23017.c: 36: i2c_start();
+      0089EB CD 80 AA         [ 4]  124 	call	_i2c_start
+                                    125 ;	../src/mcp23017.c: 37: i2c_write_addr(MCP23017_ADDR + I2C_WRITE);
+      0089EE 4B 40            [ 1]  126 	push	#0x40
+      0089F0 CD 80 FC         [ 4]  127 	call	_i2c_write_addr
+      0089F3 84               [ 1]  128 	pop	a
+                                    129 ;	../src/mcp23017.c: 38: i2c_write(0x13);  // looking at getting from GPIOB
+      0089F4 4B 13            [ 1]  130 	push	#0x13
+      0089F6 CD 80 E4         [ 4]  131 	call	_i2c_write
+      0089F9 84               [ 1]  132 	pop	a
+                                    133 ;	../src/mcp23017.c: 39: i2c_stop();
+      0089FA CD 80 C7         [ 4]  134 	call	_i2c_stop
+                                    135 ;	../src/mcp23017.c: 40: i2c_start();
+      0089FD CD 80 AA         [ 4]  136 	call	_i2c_start
+                                    137 ;	../src/mcp23017.c: 41: i2c_write_addr(MCP23017_ADDR + I2C_WRITE);
+      008A00 4B 40            [ 1]  138 	push	#0x40
+      008A02 CD 80 FC         [ 4]  139 	call	_i2c_write_addr
+      008A05 84               [ 1]  140 	pop	a
+                                    141 ;	../src/mcp23017.c: 42: i2c_stop();
+      008A06 CD 80 C7         [ 4]  142 	call	_i2c_stop
+                                    143 ;	../src/mcp23017.c: 43: i2c_start();
+      008A09 CD 80 AA         [ 4]  144 	call	_i2c_start
+                                    145 ;	../src/mcp23017.c: 44: i2c_write_addr(MCP23017_ADDR + I2C_READ);
+      008A0C 4B 41            [ 1]  146 	push	#0x41
+      008A0E CD 80 FC         [ 4]  147 	call	_i2c_write_addr
+      008A11 84               [ 1]  148 	pop	a
+                                    149 ;	../src/mcp23017.c: 45: rb = i2c_read();
+                                    150 ;	../src/mcp23017.c: 46: return rb;
+      008A12 CC 81 1B         [ 2]  151 	jp	_i2c_read
+      008A15                        152 00102$:
+                                    153 ;	../src/mcp23017.c: 49: return 0xff;
+      008A15 A6 FF            [ 1]  154 	ld	a, #0xff
+                                    155 ;	../src/mcp23017.c: 51: }
+      008A17 81               [ 4]  156 	ret
+                                    157 ;	../src/mcp23017.c: 52: void backlight_on()		// was part of the original design that had an LCD
+                                    158 ;	-----------------------------------------
+                                    159 ;	 function backlight_on
+                                    160 ;	-----------------------------------------
+      008A18                        161 _backlight_on:
+                                    162 ;	../src/mcp23017.c: 54: i2c_start();
+      008A18 CD 80 AA         [ 4]  163 	call	_i2c_start
+                                    164 ;	../src/mcp23017.c: 55: i2c_write_addr(MCP23017_ADDR + I2C_WRITE);
+      008A1B 4B 40            [ 1]  165 	push	#0x40
+      008A1D CD 80 FC         [ 4]  166 	call	_i2c_write_addr
+      008A20 84               [ 1]  167 	pop	a
+                                    168 ;	../src/mcp23017.c: 56: i2c_write(0x12);  // gpioA register
+      008A21 4B 12            [ 1]  169 	push	#0x12
+      008A23 CD 80 E4         [ 4]  170 	call	_i2c_write
+      008A26 84               [ 1]  171 	pop	a
+                                    172 ;	../src/mcp23017.c: 57: i2c_write(0x80);   // set the backlight pin on
+      008A27 4B 80            [ 1]  173 	push	#0x80
+      008A29 CD 80 E4         [ 4]  174 	call	_i2c_write
+      008A2C 84               [ 1]  175 	pop	a
+                                    176 ;	../src/mcp23017.c: 58: i2c_stop();
+                                    177 ;	../src/mcp23017.c: 59: }
+      008A2D CC 80 C7         [ 2]  178 	jp	_i2c_stop
+                                    179 ;	../src/mcp23017.c: 60: void backlight_off()
+                                    180 ;	-----------------------------------------
+                                    181 ;	 function backlight_off
+                                    182 ;	-----------------------------------------
+      008A30                        183 _backlight_off:
+                                    184 ;	../src/mcp23017.c: 62: i2c_start();
+      008A30 CD 80 AA         [ 4]  185 	call	_i2c_start
+                                    186 ;	../src/mcp23017.c: 63: i2c_write_addr(MCP23017_ADDR + I2C_WRITE);
+      008A33 4B 40            [ 1]  187 	push	#0x40
+      008A35 CD 80 FC         [ 4]  188 	call	_i2c_write_addr
+      008A38 84               [ 1]  189 	pop	a
+                                    190 ;	../src/mcp23017.c: 64: i2c_write(0x12);  // gpioA register
+      008A39 4B 12            [ 1]  191 	push	#0x12
+      008A3B CD 80 E4         [ 4]  192 	call	_i2c_write
+      008A3E 84               [ 1]  193 	pop	a
+                                    194 ;	../src/mcp23017.c: 65: i2c_write(0x00);   // set the backlight pin off
+      008A3F 4B 00            [ 1]  195 	push	#0x00
+      008A41 CD 80 E4         [ 4]  196 	call	_i2c_write
+      008A44 84               [ 1]  197 	pop	a
+                                    198 ;	../src/mcp23017.c: 66: i2c_stop();
+                                    199 ;	../src/mcp23017.c: 67: }
+      008A45 CC 80 C7         [ 2]  200 	jp	_i2c_stop
+                                    201 	.area CODE
+                                    202 	.area INITIALIZER
+                                    203 	.area CABS (ABS)

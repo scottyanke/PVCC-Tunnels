@@ -1,0 +1,46 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (STMicroelectronics STM8), page 1.
+Hexadecimal [24-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  002710 L
+    .__.ABS.                                                    =  000000 G
+    .__.CPU.                                                    =  000000 L
+    .__.H$L.                                                    =  000001 L
+  7 _LCD_CE_clear                                                  00002E R
+  7 _LCD_CE_set                                                    000023 R
+  7 _LCD_DC_clear                                                  00001E R
+  7 _LCD_DC_set                                                    000019 R
+  7 _LCD_RST_clear                                                 000038 R
+  7 _LCD_RST_set                                                   000033 R
+  7 _LCD_SPI_write                                                 00003D R
+  7 _LCD_clear                                                     000135 GR
+  7 _LCD_cmd                                                       000101 GR
+  7 _LCD_delay_ms                                                  000045 R
+  7 _LCD_goto                                                      000159 GR
+  7 _LCD_gpio_init                                                 000000 R
+  7 _LCD_init                                                      000091 GR
+  7 _LCD_printf                                                    0001BE GR
+  7 _LCD_putc                                                      000172 GR
+  7 _LCD_write                                                     00011B GR
+    _SPI_write                                                     ****** GX
+    __mullong                                                      ****** GX
+  7 _font6x8                                                       0001E7 GR
+    _strlen                                                        ****** GX
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (STMicroelectronics STM8), page 2.
+Hexadecimal [24-Bits]
+
+Area Table
+
+   0 _CODE                                      size      0   flags    0
+   1 DATA                                       size      0   flags    0
+   2 INITIALIZED                                size      0   flags    0
+   3 DABS                                       size      0   flags    8
+   4 HOME                                       size      0   flags    0
+   5 GSINIT                                     size      0   flags    0
+   6 GSFINAL                                    size      0   flags    0
+   7 CODE                                       size    40F   flags    0
+   8 INITIALIZER                                size      0   flags    0
+   9 CABS                                       size      0   flags    8
+

@@ -1,0 +1,1027 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ANSI-C Compiler
+                                      3 ; Version 3.7.0 #10231 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module LCD
+                                      6 	.optsdcc -mstm8
+                                      7 	
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _font6x8
+                                     12 	.globl _SPI_write
+                                     13 	.globl _strlen
+                                     14 	.globl _LCD_init
+                                     15 	.globl _LCD_cmd
+                                     16 	.globl _LCD_write
+                                     17 	.globl _LCD_clear
+                                     18 	.globl _LCD_goto
+                                     19 	.globl _LCD_putc
+                                     20 	.globl _LCD_printf
+                                     21 ;--------------------------------------------------------
+                                     22 ; ram data
+                                     23 ;--------------------------------------------------------
+                                     24 	.area DATA
+                                     25 ;--------------------------------------------------------
+                                     26 ; ram data
+                                     27 ;--------------------------------------------------------
+                                     28 	.area INITIALIZED
+                                     29 ;--------------------------------------------------------
+                                     30 ; absolute external ram data
+                                     31 ;--------------------------------------------------------
+                                     32 	.area DABS (ABS)
+                                     33 ;--------------------------------------------------------
+                                     34 ; global & static initialisations
+                                     35 ;--------------------------------------------------------
+                                     36 	.area HOME
+                                     37 	.area GSINIT
+                                     38 	.area GSFINAL
+                                     39 	.area GSINIT
+                                     40 ;--------------------------------------------------------
+                                     41 ; Home
+                                     42 ;--------------------------------------------------------
+                                     43 	.area HOME
+                                     44 	.area HOME
+                                     45 ;--------------------------------------------------------
+                                     46 ; code
+                                     47 ;--------------------------------------------------------
+                                     48 	.area CODE
+                                     49 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 30: static inline void LCD_gpio_init() {
+                                     50 ;	-----------------------------------------
+                                     51 ;	 function LCD_gpio_init
+                                     52 ;	-----------------------------------------
+      000000                         53 _LCD_gpio_init:
+                                     54 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 31: GPIOD->DDR |= (1 << LCD_CE_PIN) | (1 << LCD_RST_PIN);
+      000000 C6 50 11         [ 1]   55 	ld	a, 0x5011
+      000003 AA 06            [ 1]   56 	or	a, #0x06
+      000005 C7 50 11         [ 1]   57 	ld	0x5011, a
+                                     58 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 32: GPIOD->CR1 |= (1 << LCD_CE_PIN) | (1 << LCD_RST_PIN);
+      000008 C6 50 12         [ 1]   59 	ld	a, 0x5012
+      00000B AA 06            [ 1]   60 	or	a, #0x06
+      00000D C7 50 12         [ 1]   61 	ld	0x5012, a
+                                     62 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 33: GPIOC->DDR |= (1 << LCD_DC_PIN);
+      000010 72 18 50 0C      [ 1]   63 	bset	20492, #4
+                                     64 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 34: GPIOC->CR1 |= (1 << LCD_DC_PIN);
+      000014 72 18 50 0D      [ 1]   65 	bset	20493, #4
+                                     66 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 35: }
+      000018 81               [ 4]   67 	ret
+                                     68 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 37: static inline void LCD_DC_set() {
+                                     69 ;	-----------------------------------------
+                                     70 ;	 function LCD_DC_set
+                                     71 ;	-----------------------------------------
+      000019                         72 _LCD_DC_set:
+                                     73 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 38: GPIOC->ODR |= (1 << LCD_DC_PIN);
+      000019 72 18 50 0A      [ 1]   74 	bset	20490, #4
+                                     75 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 39: }
+      00001D 81               [ 4]   76 	ret
+                                     77 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 41: static inline void LCD_DC_clear() {
+                                     78 ;	-----------------------------------------
+                                     79 ;	 function LCD_DC_clear
+                                     80 ;	-----------------------------------------
+      00001E                         81 _LCD_DC_clear:
+                                     82 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 42: GPIOC->ODR &= ~(1 << LCD_DC_PIN);
+      00001E 72 19 50 0A      [ 1]   83 	bres	20490, #4
+                                     84 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 43: }
+      000022 81               [ 4]   85 	ret
+                                     86 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 45: static inline void LCD_CE_set() {
+                                     87 ;	-----------------------------------------
+                                     88 ;	 function LCD_CE_set
+                                     89 ;	-----------------------------------------
+      000023                         90 _LCD_CE_set:
+                                     91 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 46: while ((SPI->SR & SPI_SR_BSY));
+      000023                         92 00101$:
+      000023 C6 52 03         [ 1]   93 	ld	a, 0x5203
+      000026 4D               [ 1]   94 	tnz	a
+      000027 2B FA            [ 1]   95 	jrmi	00101$
+                                     96 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 47: GPIOD->ODR |= (1 << LCD_CE_PIN);
+      000029 72 12 50 0F      [ 1]   97 	bset	20495, #1
+                                     98 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 48: }
+      00002D 81               [ 4]   99 	ret
+                                    100 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 50: static inline void LCD_CE_clear() {
+                                    101 ;	-----------------------------------------
+                                    102 ;	 function LCD_CE_clear
+                                    103 ;	-----------------------------------------
+      00002E                        104 _LCD_CE_clear:
+                                    105 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 51: GPIOD->ODR &= ~(1 << LCD_CE_PIN);
+      00002E 72 13 50 0F      [ 1]  106 	bres	20495, #1
+                                    107 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 52: }
+      000032 81               [ 4]  108 	ret
+                                    109 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 54: static inline void LCD_RST_set() {
+                                    110 ;	-----------------------------------------
+                                    111 ;	 function LCD_RST_set
+                                    112 ;	-----------------------------------------
+      000033                        113 _LCD_RST_set:
+                                    114 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 55: GPIOD->ODR |= (1 << LCD_RST_PIN);
+      000033 72 14 50 0F      [ 1]  115 	bset	20495, #2
+                                    116 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 56: }
+      000037 81               [ 4]  117 	ret
+                                    118 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 58: static inline void LCD_RST_clear() {
+                                    119 ;	-----------------------------------------
+                                    120 ;	 function LCD_RST_clear
+                                    121 ;	-----------------------------------------
+      000038                        122 _LCD_RST_clear:
+                                    123 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 59: GPIOD->ODR &= ~(1 << LCD_RST_PIN);
+      000038 72 15 50 0F      [ 1]  124 	bres	20495, #2
+                                    125 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 60: }
+      00003C 81               [ 4]  126 	ret
+                                    127 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 62: static inline void LCD_SPI_write(uint8_t word) {
+                                    128 ;	-----------------------------------------
+                                    129 ;	 function LCD_SPI_write
+                                    130 ;	-----------------------------------------
+      00003D                        131 _LCD_SPI_write:
+                                    132 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 63: SPI_write(word);
+      00003D 7B 03            [ 1]  133 	ld	a, (0x03, sp)
+      00003F 88               [ 1]  134 	push	a
+      000040 CDr00r00         [ 4]  135 	call	_SPI_write
+      000043 84               [ 1]  136 	pop	a
+                                    137 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 64: }
+      000044 81               [ 4]  138 	ret
+                                    139 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 66: static inline void LCD_delay_ms(int ms) {
+                                    140 ;	-----------------------------------------
+                                    141 ;	 function LCD_delay_ms
+                                    142 ;	-----------------------------------------
+      000045                        143 _LCD_delay_ms:
+      000045 52 08            [ 2]  144 	sub	sp, #8
+                                    145 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 67: delay_ms(ms);
+      000047 16 0B            [ 2]  146 	ldw	y, (0x0b, sp)
+      000049 5F               [ 1]  147 	clrw	x
+      00004A 90 5D            [ 2]  148 	tnzw	y
+      00004C 2A 01            [ 1]  149 	jrpl	00116$
+      00004E 5A               [ 2]  150 	decw	x
+      00004F                        151 00116$:
+                                    152 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/delay.h: 13: for (i = 0; i < ((F_CPU / 18 / 1000UL) * ms); i++) {
+      00004F 0F 08            [ 1]  153 	clr	(0x08, sp)
+      000051 0F 07            [ 1]  154 	clr	(0x07, sp)
+      000053 0F 06            [ 1]  155 	clr	(0x06, sp)
+      000055 0F 05            [ 1]  156 	clr	(0x05, sp)
+      000057 90 89            [ 2]  157 	pushw	y
+      000059 89               [ 2]  158 	pushw	x
+      00005A 4B 78            [ 1]  159 	push	#0x78
+      00005C 4B 03            [ 1]  160 	push	#0x03
+      00005E 5F               [ 1]  161 	clrw	x
+      00005F 89               [ 2]  162 	pushw	x
+      000060 CDr00r00         [ 4]  163 	call	__mullong
+      000063 5B 08            [ 2]  164 	addw	sp, #8
+      000065 1F 03            [ 2]  165 	ldw	(0x03, sp), x
+      000067 17 01            [ 2]  166 	ldw	(0x01, sp), y
+      000069                        167 00104$:
+      000069 1E 07            [ 2]  168 	ldw	x, (0x07, sp)
+      00006B 13 03            [ 2]  169 	cpw	x, (0x03, sp)
+      00006D 7B 06            [ 1]  170 	ld	a, (0x06, sp)
+      00006F 12 02            [ 1]  171 	sbc	a, (0x02, sp)
+      000071 7B 05            [ 1]  172 	ld	a, (0x05, sp)
+      000073 12 01            [ 1]  173 	sbc	a, (0x01, sp)
+      000075 24 17            [ 1]  174 	jrnc	00106$
+                                    175 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/delay.h: 14: __asm__("nop");
+      000077 9D               [ 1]  176 	nop
+                                    177 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/delay.h: 13: for (i = 0; i < ((F_CPU / 18 / 1000UL) * ms); i++) {
+      000078 16 07            [ 2]  178 	ldw	y, (0x07, sp)
+      00007A 72 A9 00 01      [ 2]  179 	addw	y, #0x0001
+      00007E 7B 06            [ 1]  180 	ld	a, (0x06, sp)
+      000080 A9 00            [ 1]  181 	adc	a, #0x00
+      000082 97               [ 1]  182 	ld	xl, a
+      000083 7B 05            [ 1]  183 	ld	a, (0x05, sp)
+      000085 A9 00            [ 1]  184 	adc	a, #0x00
+      000087 95               [ 1]  185 	ld	xh, a
+      000088 17 07            [ 2]  186 	ldw	(0x07, sp), y
+      00008A 1F 05            [ 2]  187 	ldw	(0x05, sp), x
+      00008C 20 DB            [ 2]  188 	jra	00104$
+                                    189 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 67: delay_ms(ms);
+      00008E                        190 00106$:
+                                    191 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 68: }
+      00008E 5B 08            [ 2]  192 	addw	sp, #8
+      000090 81               [ 4]  193 	ret
+                                    194 ;	../src/LCD.c: 7: void LCD_init() {
+                                    195 ;	-----------------------------------------
+                                    196 ;	 function LCD_init
+                                    197 ;	-----------------------------------------
+      000091                        198 _LCD_init:
+                                    199 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 31: GPIOD->DDR |= (1 << LCD_CE_PIN) | (1 << LCD_RST_PIN);
+      000091 C6 50 11         [ 1]  200 	ld	a, 0x5011
+      000094 AA 06            [ 1]  201 	or	a, #0x06
+      000096 C7 50 11         [ 1]  202 	ld	0x5011, a
+                                    203 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 32: GPIOD->CR1 |= (1 << LCD_CE_PIN) | (1 << LCD_RST_PIN);
+      000099 C6 50 12         [ 1]  204 	ld	a, 0x5012
+      00009C AA 06            [ 1]  205 	or	a, #0x06
+      00009E C7 50 12         [ 1]  206 	ld	0x5012, a
+                                    207 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 33: GPIOC->DDR |= (1 << LCD_DC_PIN);
+      0000A1 72 18 50 0C      [ 1]  208 	bset	20492, #4
+                                    209 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 34: GPIOC->CR1 |= (1 << LCD_DC_PIN);
+      0000A5 72 18 50 0D      [ 1]  210 	bset	20493, #4
+                                    211 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 51: GPIOD->ODR &= ~(1 << LCD_CE_PIN);
+      0000A9 72 13 50 0F      [ 1]  212 	bres	20495, #1
+                                    213 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 59: GPIOD->ODR &= ~(1 << LCD_RST_PIN);
+      0000AD C6 50 0F         [ 1]  214 	ld	a, 0x500f
+      0000B0 A4 FB            [ 1]  215 	and	a, #0xfb
+      0000B2 C7 50 0F         [ 1]  216 	ld	0x500f, a
+                                    217 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/delay.h: 13: for (i = 0; i < ((F_CPU / 18 / 1000UL) * ms); i++) {
+      0000B5 90 5F            [ 1]  218 	clrw	y
+      0000B7 5F               [ 1]  219 	clrw	x
+      0000B8                        220 00113$:
+      0000B8 90 A3 AD 70      [ 2]  221 	cpw	y, #0xad70
+      0000BC 9F               [ 1]  222 	ld	a, xl
+      0000BD A2 00            [ 1]  223 	sbc	a, #0x00
+      0000BF 9E               [ 1]  224 	ld	a, xh
+      0000C0 A2 00            [ 1]  225 	sbc	a, #0x00
+      0000C2 24 08            [ 1]  226 	jrnc	00105$
+                                    227 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/delay.h: 14: __asm__("nop");
+      0000C4 9D               [ 1]  228 	nop
+                                    229 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/delay.h: 13: for (i = 0; i < ((F_CPU / 18 / 1000UL) * ms); i++) {
+      0000C5 90 5C            [ 1]  230 	incw	y
+      0000C7 26 EF            [ 1]  231 	jrne	00113$
+      0000C9 5C               [ 1]  232 	incw	x
+      0000CA 20 EC            [ 2]  233 	jra	00113$
+                                    234 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 67: delay_ms(ms);
+      0000CC                        235 00105$:
+                                    236 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 55: GPIOD->ODR |= (1 << LCD_RST_PIN);
+      0000CC 72 14 50 0F      [ 1]  237 	bset	20495, #2
+                                    238 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 46: while ((SPI->SR & SPI_SR_BSY));
+      0000D0                        239 00108$:
+      0000D0 C6 52 03         [ 1]  240 	ld	a, 0x5203
+      0000D3 4D               [ 1]  241 	tnz	a
+      0000D4 2B FA            [ 1]  242 	jrmi	00108$
+                                    243 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 47: GPIOD->ODR |= (1 << LCD_CE_PIN);
+      0000D6 72 12 50 0F      [ 1]  244 	bset	20495, #1
+                                    245 ;	../src/LCD.c: 14: LCD_cmd(0x21); // extended commands
+      0000DA 4B 21            [ 1]  246 	push	#0x21
+      0000DC CDr01r01         [ 4]  247 	call	_LCD_cmd
+      0000DF 84               [ 1]  248 	pop	a
+                                    249 ;	../src/LCD.c: 15: LCD_cmd(0xc1); // contrast Vop=6.4V
+      0000E0 4B C1            [ 1]  250 	push	#0xc1
+      0000E2 CDr01r01         [ 4]  251 	call	_LCD_cmd
+      0000E5 84               [ 1]  252 	pop	a
+                                    253 ;	../src/LCD.c: 16: LCD_cmd(0x04); // temperature coefficient
+      0000E6 4B 04            [ 1]  254 	push	#0x04
+      0000E8 CDr01r01         [ 4]  255 	call	_LCD_cmd
+      0000EB 84               [ 1]  256 	pop	a
+                                    257 ;	../src/LCD.c: 17: LCD_cmd(0x13); // bias = 1:48
+      0000EC 4B 13            [ 1]  258 	push	#0x13
+      0000EE CDr01r01         [ 4]  259 	call	_LCD_cmd
+      0000F1 84               [ 1]  260 	pop	a
+                                    261 ;	../src/LCD.c: 19: LCD_cmd(0x20); // standard commands
+      0000F2 4B 20            [ 1]  262 	push	#0x20
+      0000F4 CDr01r01         [ 4]  263 	call	_LCD_cmd
+      0000F7 84               [ 1]  264 	pop	a
+                                    265 ;	../src/LCD.c: 20: LCD_cmd(0x0C); // normal mode
+      0000F8 4B 0C            [ 1]  266 	push	#0x0c
+      0000FA CDr01r01         [ 4]  267 	call	_LCD_cmd
+      0000FD 84               [ 1]  268 	pop	a
+                                    269 ;	../src/LCD.c: 22: LCD_clear();
+                                    270 ;	../src/LCD.c: 23: }
+      0000FE CCr01r35         [ 2]  271 	jp	_LCD_clear
+                                    272 ;	../src/LCD.c: 25: void LCD_cmd(uint8_t cmd) {
+                                    273 ;	-----------------------------------------
+                                    274 ;	 function LCD_cmd
+                                    275 ;	-----------------------------------------
+      000101                        276 _LCD_cmd:
+                                    277 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 51: GPIOD->ODR &= ~(1 << LCD_CE_PIN);
+      000101 72 13 50 0F      [ 1]  278 	bres	20495, #1
+                                    279 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 42: GPIOC->ODR &= ~(1 << LCD_DC_PIN);
+      000105 72 19 50 0A      [ 1]  280 	bres	20490, #4
+                                    281 ;	../src/LCD.c: 28: LCD_SPI_write(cmd);
+      000109 7B 03            [ 1]  282 	ld	a, (0x03, sp)
+                                    283 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 63: SPI_write(word);
+      00010B 88               [ 1]  284 	push	a
+      00010C CDr00r00         [ 4]  285 	call	_SPI_write
+      00010F 84               [ 1]  286 	pop	a
+                                    287 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 46: while ((SPI->SR & SPI_SR_BSY));
+      000110                        288 00104$:
+      000110 C6 52 03         [ 1]  289 	ld	a, 0x5203
+      000113 4D               [ 1]  290 	tnz	a
+      000114 2B FA            [ 1]  291 	jrmi	00104$
+                                    292 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 47: GPIOD->ODR |= (1 << LCD_CE_PIN);
+      000116 72 12 50 0F      [ 1]  293 	bset	20495, #1
+                                    294 ;	../src/LCD.c: 29: LCD_CE_set();
+                                    295 ;	../src/LCD.c: 30: }
+      00011A 81               [ 4]  296 	ret
+                                    297 ;	../src/LCD.c: 32: void LCD_write(uint8_t data) {
+                                    298 ;	-----------------------------------------
+                                    299 ;	 function LCD_write
+                                    300 ;	-----------------------------------------
+      00011B                        301 _LCD_write:
+                                    302 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 51: GPIOD->ODR &= ~(1 << LCD_CE_PIN);
+      00011B 72 13 50 0F      [ 1]  303 	bres	20495, #1
+                                    304 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 38: GPIOC->ODR |= (1 << LCD_DC_PIN);
+      00011F 72 18 50 0A      [ 1]  305 	bset	20490, #4
+                                    306 ;	../src/LCD.c: 35: LCD_SPI_write(data);
+      000123 7B 03            [ 1]  307 	ld	a, (0x03, sp)
+                                    308 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 63: SPI_write(word);
+      000125 88               [ 1]  309 	push	a
+      000126 CDr00r00         [ 4]  310 	call	_SPI_write
+      000129 84               [ 1]  311 	pop	a
+                                    312 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 46: while ((SPI->SR & SPI_SR_BSY));
+      00012A                        313 00104$:
+      00012A C6 52 03         [ 1]  314 	ld	a, 0x5203
+      00012D 4D               [ 1]  315 	tnz	a
+      00012E 2B FA            [ 1]  316 	jrmi	00104$
+                                    317 ;	/home/scott/projects-stm8/lvcc-tunnels/inc/LCD_config.h: 47: GPIOD->ODR |= (1 << LCD_CE_PIN);
+      000130 72 12 50 0F      [ 1]  318 	bset	20495, #1
+                                    319 ;	../src/LCD.c: 36: LCD_CE_set();
+                                    320 ;	../src/LCD.c: 37: }
+      000134 81               [ 4]  321 	ret
+                                    322 ;	../src/LCD.c: 39: void LCD_clear() {
+                                    323 ;	-----------------------------------------
+                                    324 ;	 function LCD_clear
+                                    325 ;	-----------------------------------------
+      000135                        326 _LCD_clear:
+      000135 52 02            [ 2]  327 	sub	sp, #2
+                                    328 ;	../src/LCD.c: 40: uint16_t i = 84 * 6;
+      000137 AE 01 F8         [ 2]  329 	ldw	x, #0x01f8
+                                    330 ;	../src/LCD.c: 41: LCD_goto(0, 0);
+      00013A 89               [ 2]  331 	pushw	x
+      00013B 4B 00            [ 1]  332 	push	#0x00
+      00013D 4B 00            [ 1]  333 	push	#0x00
+      00013F CDr01r59         [ 4]  334 	call	_LCD_goto
+      000142 5B 02            [ 2]  335 	addw	sp, #2
+      000144 85               [ 2]  336 	popw	x
+                                    337 ;	../src/LCD.c: 42: while (i-- > 0)
+      000145                        338 00101$:
+      000145 1F 01            [ 2]  339 	ldw	(0x01, sp), x
+      000147 5A               [ 2]  340 	decw	x
+      000148 16 01            [ 2]  341 	ldw	y, (0x01, sp)
+      00014A 27 0A            [ 1]  342 	jreq	00104$
+                                    343 ;	../src/LCD.c: 43: LCD_write(0);
+      00014C 89               [ 2]  344 	pushw	x
+      00014D 4B 00            [ 1]  345 	push	#0x00
+      00014F CDr01r1B         [ 4]  346 	call	_LCD_write
+      000152 84               [ 1]  347 	pop	a
+      000153 85               [ 2]  348 	popw	x
+      000154 20 EF            [ 2]  349 	jra	00101$
+      000156                        350 00104$:
+                                    351 ;	../src/LCD.c: 44: }
+      000156 5B 02            [ 2]  352 	addw	sp, #2
+      000158 81               [ 4]  353 	ret
+                                    354 ;	../src/LCD.c: 46: void LCD_goto(uint8_t col, uint8_t row) {
+                                    355 ;	-----------------------------------------
+                                    356 ;	 function LCD_goto
+                                    357 ;	-----------------------------------------
+      000159                        358 _LCD_goto:
+                                    359 ;	../src/LCD.c: 47: LCD_cmd(0x80 | col);
+      000159 7B 03            [ 1]  360 	ld	a, (0x03, sp)
+      00015B 41               [ 1]  361 	exg	a, xl
+      00015C 4F               [ 1]  362 	clr	a
+      00015D 41               [ 1]  363 	exg	a, xl
+      00015E AA 80            [ 1]  364 	or	a, #0x80
+      000160 88               [ 1]  365 	push	a
+      000161 CDr01r01         [ 4]  366 	call	_LCD_cmd
+      000164 84               [ 1]  367 	pop	a
+                                    368 ;	../src/LCD.c: 48: LCD_cmd(0x40 | row);
+      000165 7B 04            [ 1]  369 	ld	a, (0x04, sp)
+      000167 41               [ 1]  370 	exg	a, xl
+      000168 4F               [ 1]  371 	clr	a
+      000169 41               [ 1]  372 	exg	a, xl
+      00016A AA 40            [ 1]  373 	or	a, #0x40
+      00016C 88               [ 1]  374 	push	a
+      00016D CDr01r01         [ 4]  375 	call	_LCD_cmd
+      000170 84               [ 1]  376 	pop	a
+                                    377 ;	../src/LCD.c: 49: }
+      000171 81               [ 4]  378 	ret
+                                    379 ;	../src/LCD.c: 51: void LCD_putc(char c) {
+                                    380 ;	-----------------------------------------
+                                    381 ;	 function LCD_putc
+                                    382 ;	-----------------------------------------
+      000172                        383 _LCD_putc:
+      000172 52 05            [ 2]  384 	sub	sp, #5
+                                    385 ;	../src/LCD.c: 53: if (c == ' ') {
+      000174 7B 08            [ 1]  386 	ld	a, (0x08, sp)
+      000176 A1 20            [ 1]  387 	cp	a, #0x20
+      000178 26 0E            [ 1]  388 	jrne	00103$
+                                    389 ;	../src/LCD.c: 54: LCD_write(0);
+      00017A 4B 00            [ 1]  390 	push	#0x00
+      00017C CDr01r1B         [ 4]  391 	call	_LCD_write
+      00017F 84               [ 1]  392 	pop	a
+                                    393 ;	../src/LCD.c: 55: LCD_write(0);
+      000180 4B 00            [ 1]  394 	push	#0x00
+      000182 CDr01r1B         [ 4]  395 	call	_LCD_write
+      000185 84               [ 1]  396 	pop	a
+      000186 20 33            [ 2]  397 	jra	00107$
+      000188                        398 00103$:
+                                    399 ;	../src/LCD.c: 57: c -= 32;  // just printable characters
+      000188 7B 08            [ 1]  400 	ld	a, (0x08, sp)
+      00018A A0 20            [ 1]  401 	sub	a, #0x20
+      00018C 6B 08            [ 1]  402 	ld	(0x08, sp), a
+                                    403 ;	../src/LCD.c: 59: for (i=0; i<6; i++)
+      00018E 0F 05            [ 1]  404 	clr	(0x05, sp)
+      000190 AEr01rE7         [ 2]  405 	ldw	x, #_font6x8+0
+      000193 1F 03            [ 2]  406 	ldw	(0x03, sp), x
+      000195 7B 08            [ 1]  407 	ld	a, (0x08, sp)
+      000197 97               [ 1]  408 	ld	xl, a
+      000198 A6 06            [ 1]  409 	ld	a, #0x06
+      00019A 42               [ 4]  410 	mul	x, a
+      00019B 72 FB 03         [ 2]  411 	addw	x, (0x03, sp)
+      00019E 1F 01            [ 2]  412 	ldw	(0x01, sp), x
+      0001A0                        413 00105$:
+                                    414 ;	../src/LCD.c: 60: LCD_write(font6x8[c][i]);
+      0001A0 5F               [ 1]  415 	clrw	x
+      0001A1 7B 05            [ 1]  416 	ld	a, (0x05, sp)
+      0001A3 97               [ 1]  417 	ld	xl, a
+      0001A4 72 FB 01         [ 2]  418 	addw	x, (0x01, sp)
+      0001A7 F6               [ 1]  419 	ld	a, (x)
+      0001A8 88               [ 1]  420 	push	a
+      0001A9 CDr01r1B         [ 4]  421 	call	_LCD_write
+      0001AC 84               [ 1]  422 	pop	a
+                                    423 ;	../src/LCD.c: 59: for (i=0; i<6; i++)
+      0001AD 0C 05            [ 1]  424 	inc	(0x05, sp)
+      0001AF 7B 05            [ 1]  425 	ld	a, (0x05, sp)
+      0001B1 A1 06            [ 1]  426 	cp	a, #0x06
+      0001B3 25 EB            [ 1]  427 	jrc	00105$
+                                    428 ;	../src/LCD.c: 61: LCD_write(0);
+      0001B5 4B 00            [ 1]  429 	push	#0x00
+      0001B7 CDr01r1B         [ 4]  430 	call	_LCD_write
+      0001BA 84               [ 1]  431 	pop	a
+      0001BB                        432 00107$:
+                                    433 ;	../src/LCD.c: 64: }
+      0001BB 5B 05            [ 2]  434 	addw	sp, #5
+      0001BD 81               [ 4]  435 	ret
+                                    436 ;	../src/LCD.c: 66: void LCD_printf(char *s) {
+                                    437 ;	-----------------------------------------
+                                    438 ;	 function LCD_printf
+                                    439 ;	-----------------------------------------
+      0001BE                        440 _LCD_printf:
+      0001BE 52 02            [ 2]  441 	sub	sp, #2
+                                    442 ;	../src/LCD.c: 69: len = strlen(s);
+      0001C0 1E 05            [ 2]  443 	ldw	x, (0x05, sp)
+      0001C2 89               [ 2]  444 	pushw	x
+      0001C3 CDr00r00         [ 4]  445 	call	_strlen
+      0001C6 5B 02            [ 2]  446 	addw	sp, #2
+      0001C8 9F               [ 1]  447 	ld	a, xl
+      0001C9 6B 01            [ 1]  448 	ld	(0x01, sp), a
+                                    449 ;	../src/LCD.c: 70: for (i = 0; i < len; i++)
+      0001CB 0F 02            [ 1]  450 	clr	(0x02, sp)
+      0001CD                        451 00103$:
+      0001CD 7B 02            [ 1]  452 	ld	a, (0x02, sp)
+      0001CF 11 01            [ 1]  453 	cp	a, (0x01, sp)
+      0001D1 24 11            [ 1]  454 	jrnc	00105$
+                                    455 ;	../src/LCD.c: 72: c = s[i];
+      0001D3 5F               [ 1]  456 	clrw	x
+      0001D4 7B 02            [ 1]  457 	ld	a, (0x02, sp)
+      0001D6 97               [ 1]  458 	ld	xl, a
+      0001D7 72 FB 05         [ 2]  459 	addw	x, (0x05, sp)
+      0001DA F6               [ 1]  460 	ld	a, (x)
+                                    461 ;	../src/LCD.c: 73: LCD_putc(c);
+      0001DB 88               [ 1]  462 	push	a
+      0001DC CDr01r72         [ 4]  463 	call	_LCD_putc
+      0001DF 84               [ 1]  464 	pop	a
+                                    465 ;	../src/LCD.c: 70: for (i = 0; i < len; i++)
+      0001E0 0C 02            [ 1]  466 	inc	(0x02, sp)
+      0001E2 20 E9            [ 2]  467 	jra	00103$
+      0001E4                        468 00105$:
+                                    469 ;	../src/LCD.c: 75: }
+      0001E4 5B 02            [ 2]  470 	addw	sp, #2
+      0001E6 81               [ 4]  471 	ret
+                                    472 	.area CODE
+      0001E7                        473 _font6x8:
+      0001E7 00                     474 	.db #0x00	; 0
+      0001E8 00                     475 	.db #0x00	; 0
+      0001E9 00                     476 	.db #0x00	; 0
+      0001EA 00                     477 	.db #0x00	; 0
+      0001EB 00                     478 	.db #0x00	; 0
+      0001EC 00                     479 	.db #0x00	; 0
+      0001ED 00                     480 	.db #0x00	; 0
+      0001EE 00                     481 	.db #0x00	; 0
+      0001EF 00                     482 	.db #0x00	; 0
+      0001F0 2F                     483 	.db #0x2f	; 47
+      0001F1 00                     484 	.db #0x00	; 0
+      0001F2 00                     485 	.db #0x00	; 0
+      0001F3 00                     486 	.db #0x00	; 0
+      0001F4 00                     487 	.db #0x00	; 0
+      0001F5 02                     488 	.db #0x02	; 2
+      0001F6 05                     489 	.db #0x05	; 5
+      0001F7 02                     490 	.db #0x02	; 2
+      0001F8 00                     491 	.db #0x00	; 0
+      0001F9 00                     492 	.db #0x00	; 0
+      0001FA 14                     493 	.db #0x14	; 20
+      0001FB 7F                     494 	.db #0x7f	; 127
+      0001FC 14                     495 	.db #0x14	; 20
+      0001FD 7F                     496 	.db #0x7f	; 127
+      0001FE 14                     497 	.db #0x14	; 20
+      0001FF 00                     498 	.db #0x00	; 0
+      000200 24                     499 	.db #0x24	; 36
+      000201 2A                     500 	.db #0x2a	; 42
+      000202 7F                     501 	.db #0x7f	; 127
+      000203 2A                     502 	.db #0x2a	; 42
+      000204 12                     503 	.db #0x12	; 18
+      000205 00                     504 	.db #0x00	; 0
+      000206 62                     505 	.db #0x62	; 98	'b'
+      000207 64                     506 	.db #0x64	; 100	'd'
+      000208 08                     507 	.db #0x08	; 8
+      000209 13                     508 	.db #0x13	; 19
+      00020A 23                     509 	.db #0x23	; 35
+      00020B 00                     510 	.db #0x00	; 0
+      00020C 36                     511 	.db #0x36	; 54	'6'
+      00020D 49                     512 	.db #0x49	; 73	'I'
+      00020E 55                     513 	.db #0x55	; 85	'U'
+      00020F 22                     514 	.db #0x22	; 34
+      000210 50                     515 	.db #0x50	; 80	'P'
+      000211 00                     516 	.db #0x00	; 0
+      000212 00                     517 	.db #0x00	; 0
+      000213 05                     518 	.db #0x05	; 5
+      000214 03                     519 	.db #0x03	; 3
+      000215 00                     520 	.db #0x00	; 0
+      000216 00                     521 	.db #0x00	; 0
+      000217 00                     522 	.db #0x00	; 0
+      000218 00                     523 	.db #0x00	; 0
+      000219 1C                     524 	.db #0x1c	; 28
+      00021A 22                     525 	.db #0x22	; 34
+      00021B 41                     526 	.db #0x41	; 65	'A'
+      00021C 00                     527 	.db #0x00	; 0
+      00021D 00                     528 	.db #0x00	; 0
+      00021E 00                     529 	.db #0x00	; 0
+      00021F 41                     530 	.db #0x41	; 65	'A'
+      000220 22                     531 	.db #0x22	; 34
+      000221 1C                     532 	.db #0x1c	; 28
+      000222 00                     533 	.db #0x00	; 0
+      000223 00                     534 	.db #0x00	; 0
+      000224 14                     535 	.db #0x14	; 20
+      000225 08                     536 	.db #0x08	; 8
+      000226 3E                     537 	.db #0x3e	; 62
+      000227 08                     538 	.db #0x08	; 8
+      000228 14                     539 	.db #0x14	; 20
+      000229 00                     540 	.db #0x00	; 0
+      00022A 08                     541 	.db #0x08	; 8
+      00022B 08                     542 	.db #0x08	; 8
+      00022C 3E                     543 	.db #0x3e	; 62
+      00022D 08                     544 	.db #0x08	; 8
+      00022E 08                     545 	.db #0x08	; 8
+      00022F 00                     546 	.db #0x00	; 0
+      000230 00                     547 	.db #0x00	; 0
+      000231 00                     548 	.db #0x00	; 0
+      000232 A0                     549 	.db #0xa0	; 160
+      000233 60                     550 	.db #0x60	; 96
+      000234 00                     551 	.db #0x00	; 0
+      000235 00                     552 	.db #0x00	; 0
+      000236 08                     553 	.db #0x08	; 8
+      000237 08                     554 	.db #0x08	; 8
+      000238 08                     555 	.db #0x08	; 8
+      000239 08                     556 	.db #0x08	; 8
+      00023A 08                     557 	.db #0x08	; 8
+      00023B 00                     558 	.db #0x00	; 0
+      00023C 00                     559 	.db #0x00	; 0
+      00023D 60                     560 	.db #0x60	; 96
+      00023E 60                     561 	.db #0x60	; 96
+      00023F 00                     562 	.db #0x00	; 0
+      000240 00                     563 	.db #0x00	; 0
+      000241 00                     564 	.db #0x00	; 0
+      000242 20                     565 	.db #0x20	; 32
+      000243 10                     566 	.db #0x10	; 16
+      000244 08                     567 	.db #0x08	; 8
+      000245 04                     568 	.db #0x04	; 4
+      000246 02                     569 	.db #0x02	; 2
+      000247 00                     570 	.db #0x00	; 0
+      000248 3E                     571 	.db #0x3e	; 62
+      000249 51                     572 	.db #0x51	; 81	'Q'
+      00024A 49                     573 	.db #0x49	; 73	'I'
+      00024B 45                     574 	.db #0x45	; 69	'E'
+      00024C 3E                     575 	.db #0x3e	; 62
+      00024D 00                     576 	.db #0x00	; 0
+      00024E 00                     577 	.db #0x00	; 0
+      00024F 42                     578 	.db #0x42	; 66	'B'
+      000250 7F                     579 	.db #0x7f	; 127
+      000251 40                     580 	.db #0x40	; 64
+      000252 00                     581 	.db #0x00	; 0
+      000253 00                     582 	.db #0x00	; 0
+      000254 42                     583 	.db #0x42	; 66	'B'
+      000255 61                     584 	.db #0x61	; 97	'a'
+      000256 51                     585 	.db #0x51	; 81	'Q'
+      000257 49                     586 	.db #0x49	; 73	'I'
+      000258 46                     587 	.db #0x46	; 70	'F'
+      000259 00                     588 	.db #0x00	; 0
+      00025A 21                     589 	.db #0x21	; 33
+      00025B 41                     590 	.db #0x41	; 65	'A'
+      00025C 45                     591 	.db #0x45	; 69	'E'
+      00025D 4B                     592 	.db #0x4b	; 75	'K'
+      00025E 31                     593 	.db #0x31	; 49	'1'
+      00025F 00                     594 	.db #0x00	; 0
+      000260 18                     595 	.db #0x18	; 24
+      000261 14                     596 	.db #0x14	; 20
+      000262 12                     597 	.db #0x12	; 18
+      000263 7F                     598 	.db #0x7f	; 127
+      000264 10                     599 	.db #0x10	; 16
+      000265 00                     600 	.db #0x00	; 0
+      000266 27                     601 	.db #0x27	; 39
+      000267 45                     602 	.db #0x45	; 69	'E'
+      000268 45                     603 	.db #0x45	; 69	'E'
+      000269 45                     604 	.db #0x45	; 69	'E'
+      00026A 39                     605 	.db #0x39	; 57	'9'
+      00026B 00                     606 	.db #0x00	; 0
+      00026C 3C                     607 	.db #0x3c	; 60
+      00026D 4A                     608 	.db #0x4a	; 74	'J'
+      00026E 49                     609 	.db #0x49	; 73	'I'
+      00026F 49                     610 	.db #0x49	; 73	'I'
+      000270 30                     611 	.db #0x30	; 48	'0'
+      000271 00                     612 	.db #0x00	; 0
+      000272 01                     613 	.db #0x01	; 1
+      000273 71                     614 	.db #0x71	; 113	'q'
+      000274 09                     615 	.db #0x09	; 9
+      000275 05                     616 	.db #0x05	; 5
+      000276 03                     617 	.db #0x03	; 3
+      000277 00                     618 	.db #0x00	; 0
+      000278 36                     619 	.db #0x36	; 54	'6'
+      000279 49                     620 	.db #0x49	; 73	'I'
+      00027A 49                     621 	.db #0x49	; 73	'I'
+      00027B 49                     622 	.db #0x49	; 73	'I'
+      00027C 36                     623 	.db #0x36	; 54	'6'
+      00027D 00                     624 	.db #0x00	; 0
+      00027E 06                     625 	.db #0x06	; 6
+      00027F 49                     626 	.db #0x49	; 73	'I'
+      000280 49                     627 	.db #0x49	; 73	'I'
+      000281 29                     628 	.db #0x29	; 41
+      000282 1E                     629 	.db #0x1e	; 30
+      000283 00                     630 	.db #0x00	; 0
+      000284 00                     631 	.db #0x00	; 0
+      000285 36                     632 	.db #0x36	; 54	'6'
+      000286 36                     633 	.db #0x36	; 54	'6'
+      000287 00                     634 	.db #0x00	; 0
+      000288 00                     635 	.db #0x00	; 0
+      000289 00                     636 	.db #0x00	; 0
+      00028A 00                     637 	.db #0x00	; 0
+      00028B 56                     638 	.db #0x56	; 86	'V'
+      00028C 36                     639 	.db #0x36	; 54	'6'
+      00028D 00                     640 	.db #0x00	; 0
+      00028E 00                     641 	.db #0x00	; 0
+      00028F 00                     642 	.db #0x00	; 0
+      000290 08                     643 	.db #0x08	; 8
+      000291 14                     644 	.db #0x14	; 20
+      000292 22                     645 	.db #0x22	; 34
+      000293 41                     646 	.db #0x41	; 65	'A'
+      000294 00                     647 	.db #0x00	; 0
+      000295 00                     648 	.db #0x00	; 0
+      000296 14                     649 	.db #0x14	; 20
+      000297 14                     650 	.db #0x14	; 20
+      000298 14                     651 	.db #0x14	; 20
+      000299 14                     652 	.db #0x14	; 20
+      00029A 14                     653 	.db #0x14	; 20
+      00029B 00                     654 	.db #0x00	; 0
+      00029C 00                     655 	.db #0x00	; 0
+      00029D 41                     656 	.db #0x41	; 65	'A'
+      00029E 22                     657 	.db #0x22	; 34
+      00029F 14                     658 	.db #0x14	; 20
+      0002A0 08                     659 	.db #0x08	; 8
+      0002A1 00                     660 	.db #0x00	; 0
+      0002A2 02                     661 	.db #0x02	; 2
+      0002A3 01                     662 	.db #0x01	; 1
+      0002A4 51                     663 	.db #0x51	; 81	'Q'
+      0002A5 09                     664 	.db #0x09	; 9
+      0002A6 06                     665 	.db #0x06	; 6
+      0002A7 00                     666 	.db #0x00	; 0
+      0002A8 32                     667 	.db #0x32	; 50	'2'
+      0002A9 49                     668 	.db #0x49	; 73	'I'
+      0002AA 59                     669 	.db #0x59	; 89	'Y'
+      0002AB 51                     670 	.db #0x51	; 81	'Q'
+      0002AC 3E                     671 	.db #0x3e	; 62
+      0002AD 00                     672 	.db #0x00	; 0
+      0002AE 7C                     673 	.db #0x7c	; 124
+      0002AF 12                     674 	.db #0x12	; 18
+      0002B0 11                     675 	.db #0x11	; 17
+      0002B1 12                     676 	.db #0x12	; 18
+      0002B2 7C                     677 	.db #0x7c	; 124
+      0002B3 00                     678 	.db #0x00	; 0
+      0002B4 7F                     679 	.db #0x7f	; 127
+      0002B5 49                     680 	.db #0x49	; 73	'I'
+      0002B6 49                     681 	.db #0x49	; 73	'I'
+      0002B7 49                     682 	.db #0x49	; 73	'I'
+      0002B8 36                     683 	.db #0x36	; 54	'6'
+      0002B9 00                     684 	.db #0x00	; 0
+      0002BA 3E                     685 	.db #0x3e	; 62
+      0002BB 41                     686 	.db #0x41	; 65	'A'
+      0002BC 41                     687 	.db #0x41	; 65	'A'
+      0002BD 41                     688 	.db #0x41	; 65	'A'
+      0002BE 22                     689 	.db #0x22	; 34
+      0002BF 00                     690 	.db #0x00	; 0
+      0002C0 7F                     691 	.db #0x7f	; 127
+      0002C1 41                     692 	.db #0x41	; 65	'A'
+      0002C2 41                     693 	.db #0x41	; 65	'A'
+      0002C3 22                     694 	.db #0x22	; 34
+      0002C4 1C                     695 	.db #0x1c	; 28
+      0002C5 00                     696 	.db #0x00	; 0
+      0002C6 7F                     697 	.db #0x7f	; 127
+      0002C7 49                     698 	.db #0x49	; 73	'I'
+      0002C8 49                     699 	.db #0x49	; 73	'I'
+      0002C9 49                     700 	.db #0x49	; 73	'I'
+      0002CA 41                     701 	.db #0x41	; 65	'A'
+      0002CB 00                     702 	.db #0x00	; 0
+      0002CC 7F                     703 	.db #0x7f	; 127
+      0002CD 09                     704 	.db #0x09	; 9
+      0002CE 09                     705 	.db #0x09	; 9
+      0002CF 09                     706 	.db #0x09	; 9
+      0002D0 01                     707 	.db #0x01	; 1
+      0002D1 00                     708 	.db #0x00	; 0
+      0002D2 3E                     709 	.db #0x3e	; 62
+      0002D3 41                     710 	.db #0x41	; 65	'A'
+      0002D4 49                     711 	.db #0x49	; 73	'I'
+      0002D5 49                     712 	.db #0x49	; 73	'I'
+      0002D6 7A                     713 	.db #0x7a	; 122	'z'
+      0002D7 00                     714 	.db #0x00	; 0
+      0002D8 7F                     715 	.db #0x7f	; 127
+      0002D9 08                     716 	.db #0x08	; 8
+      0002DA 08                     717 	.db #0x08	; 8
+      0002DB 08                     718 	.db #0x08	; 8
+      0002DC 7F                     719 	.db #0x7f	; 127
+      0002DD 00                     720 	.db #0x00	; 0
+      0002DE 00                     721 	.db #0x00	; 0
+      0002DF 41                     722 	.db #0x41	; 65	'A'
+      0002E0 7F                     723 	.db #0x7f	; 127
+      0002E1 41                     724 	.db #0x41	; 65	'A'
+      0002E2 00                     725 	.db #0x00	; 0
+      0002E3 00                     726 	.db #0x00	; 0
+      0002E4 20                     727 	.db #0x20	; 32
+      0002E5 40                     728 	.db #0x40	; 64
+      0002E6 41                     729 	.db #0x41	; 65	'A'
+      0002E7 3F                     730 	.db #0x3f	; 63
+      0002E8 01                     731 	.db #0x01	; 1
+      0002E9 00                     732 	.db #0x00	; 0
+      0002EA 7F                     733 	.db #0x7f	; 127
+      0002EB 08                     734 	.db #0x08	; 8
+      0002EC 14                     735 	.db #0x14	; 20
+      0002ED 22                     736 	.db #0x22	; 34
+      0002EE 41                     737 	.db #0x41	; 65	'A'
+      0002EF 00                     738 	.db #0x00	; 0
+      0002F0 7F                     739 	.db #0x7f	; 127
+      0002F1 40                     740 	.db #0x40	; 64
+      0002F2 40                     741 	.db #0x40	; 64
+      0002F3 40                     742 	.db #0x40	; 64
+      0002F4 40                     743 	.db #0x40	; 64
+      0002F5 00                     744 	.db #0x00	; 0
+      0002F6 7F                     745 	.db #0x7f	; 127
+      0002F7 02                     746 	.db #0x02	; 2
+      0002F8 0C                     747 	.db #0x0c	; 12
+      0002F9 02                     748 	.db #0x02	; 2
+      0002FA 7F                     749 	.db #0x7f	; 127
+      0002FB 00                     750 	.db #0x00	; 0
+      0002FC 7F                     751 	.db #0x7f	; 127
+      0002FD 04                     752 	.db #0x04	; 4
+      0002FE 08                     753 	.db #0x08	; 8
+      0002FF 10                     754 	.db #0x10	; 16
+      000300 7F                     755 	.db #0x7f	; 127
+      000301 00                     756 	.db #0x00	; 0
+      000302 3E                     757 	.db #0x3e	; 62
+      000303 41                     758 	.db #0x41	; 65	'A'
+      000304 41                     759 	.db #0x41	; 65	'A'
+      000305 41                     760 	.db #0x41	; 65	'A'
+      000306 3E                     761 	.db #0x3e	; 62
+      000307 00                     762 	.db #0x00	; 0
+      000308 7F                     763 	.db #0x7f	; 127
+      000309 09                     764 	.db #0x09	; 9
+      00030A 09                     765 	.db #0x09	; 9
+      00030B 09                     766 	.db #0x09	; 9
+      00030C 06                     767 	.db #0x06	; 6
+      00030D 00                     768 	.db #0x00	; 0
+      00030E 3E                     769 	.db #0x3e	; 62
+      00030F 41                     770 	.db #0x41	; 65	'A'
+      000310 51                     771 	.db #0x51	; 81	'Q'
+      000311 21                     772 	.db #0x21	; 33
+      000312 5E                     773 	.db #0x5e	; 94
+      000313 00                     774 	.db #0x00	; 0
+      000314 7F                     775 	.db #0x7f	; 127
+      000315 09                     776 	.db #0x09	; 9
+      000316 19                     777 	.db #0x19	; 25
+      000317 29                     778 	.db #0x29	; 41
+      000318 46                     779 	.db #0x46	; 70	'F'
+      000319 00                     780 	.db #0x00	; 0
+      00031A 46                     781 	.db #0x46	; 70	'F'
+      00031B 49                     782 	.db #0x49	; 73	'I'
+      00031C 49                     783 	.db #0x49	; 73	'I'
+      00031D 49                     784 	.db #0x49	; 73	'I'
+      00031E 31                     785 	.db #0x31	; 49	'1'
+      00031F 00                     786 	.db #0x00	; 0
+      000320 01                     787 	.db #0x01	; 1
+      000321 01                     788 	.db #0x01	; 1
+      000322 7F                     789 	.db #0x7f	; 127
+      000323 01                     790 	.db #0x01	; 1
+      000324 01                     791 	.db #0x01	; 1
+      000325 00                     792 	.db #0x00	; 0
+      000326 3F                     793 	.db #0x3f	; 63
+      000327 40                     794 	.db #0x40	; 64
+      000328 40                     795 	.db #0x40	; 64
+      000329 40                     796 	.db #0x40	; 64
+      00032A 3F                     797 	.db #0x3f	; 63
+      00032B 00                     798 	.db #0x00	; 0
+      00032C 1F                     799 	.db #0x1f	; 31
+      00032D 20                     800 	.db #0x20	; 32
+      00032E 40                     801 	.db #0x40	; 64
+      00032F 20                     802 	.db #0x20	; 32
+      000330 1F                     803 	.db #0x1f	; 31
+      000331 00                     804 	.db #0x00	; 0
+      000332 3F                     805 	.db #0x3f	; 63
+      000333 40                     806 	.db #0x40	; 64
+      000334 38                     807 	.db #0x38	; 56	'8'
+      000335 40                     808 	.db #0x40	; 64
+      000336 3F                     809 	.db #0x3f	; 63
+      000337 00                     810 	.db #0x00	; 0
+      000338 63                     811 	.db #0x63	; 99	'c'
+      000339 14                     812 	.db #0x14	; 20
+      00033A 08                     813 	.db #0x08	; 8
+      00033B 14                     814 	.db #0x14	; 20
+      00033C 63                     815 	.db #0x63	; 99	'c'
+      00033D 00                     816 	.db #0x00	; 0
+      00033E 07                     817 	.db #0x07	; 7
+      00033F 08                     818 	.db #0x08	; 8
+      000340 70                     819 	.db #0x70	; 112	'p'
+      000341 08                     820 	.db #0x08	; 8
+      000342 07                     821 	.db #0x07	; 7
+      000343 00                     822 	.db #0x00	; 0
+      000344 61                     823 	.db #0x61	; 97	'a'
+      000345 51                     824 	.db #0x51	; 81	'Q'
+      000346 49                     825 	.db #0x49	; 73	'I'
+      000347 45                     826 	.db #0x45	; 69	'E'
+      000348 43                     827 	.db #0x43	; 67	'C'
+      000349 00                     828 	.db #0x00	; 0
+      00034A 00                     829 	.db #0x00	; 0
+      00034B 7F                     830 	.db #0x7f	; 127
+      00034C 41                     831 	.db #0x41	; 65	'A'
+      00034D 41                     832 	.db #0x41	; 65	'A'
+      00034E 00                     833 	.db #0x00	; 0
+      00034F 00                     834 	.db #0x00	; 0
+      000350 55                     835 	.db #0x55	; 85	'U'
+      000351 2A                     836 	.db #0x2a	; 42
+      000352 55                     837 	.db #0x55	; 85	'U'
+      000353 2A                     838 	.db #0x2a	; 42
+      000354 55                     839 	.db #0x55	; 85	'U'
+      000355 00                     840 	.db #0x00	; 0
+      000356 00                     841 	.db #0x00	; 0
+      000357 41                     842 	.db #0x41	; 65	'A'
+      000358 41                     843 	.db #0x41	; 65	'A'
+      000359 7F                     844 	.db #0x7f	; 127
+      00035A 00                     845 	.db #0x00	; 0
+      00035B 00                     846 	.db #0x00	; 0
+      00035C 04                     847 	.db #0x04	; 4
+      00035D 02                     848 	.db #0x02	; 2
+      00035E 01                     849 	.db #0x01	; 1
+      00035F 02                     850 	.db #0x02	; 2
+      000360 04                     851 	.db #0x04	; 4
+      000361 00                     852 	.db #0x00	; 0
+      000362 40                     853 	.db #0x40	; 64
+      000363 40                     854 	.db #0x40	; 64
+      000364 40                     855 	.db #0x40	; 64
+      000365 40                     856 	.db #0x40	; 64
+      000366 40                     857 	.db #0x40	; 64
+      000367 00                     858 	.db #0x00	; 0
+      000368 00                     859 	.db #0x00	; 0
+      000369 01                     860 	.db #0x01	; 1
+      00036A 02                     861 	.db #0x02	; 2
+      00036B 04                     862 	.db #0x04	; 4
+      00036C 00                     863 	.db #0x00	; 0
+      00036D 00                     864 	.db #0x00	; 0
+      00036E 20                     865 	.db #0x20	; 32
+      00036F 54                     866 	.db #0x54	; 84	'T'
+      000370 54                     867 	.db #0x54	; 84	'T'
+      000371 54                     868 	.db #0x54	; 84	'T'
+      000372 78                     869 	.db #0x78	; 120	'x'
+      000373 00                     870 	.db #0x00	; 0
+      000374 7F                     871 	.db #0x7f	; 127
+      000375 48                     872 	.db #0x48	; 72	'H'
+      000376 44                     873 	.db #0x44	; 68	'D'
+      000377 44                     874 	.db #0x44	; 68	'D'
+      000378 38                     875 	.db #0x38	; 56	'8'
+      000379 00                     876 	.db #0x00	; 0
+      00037A 38                     877 	.db #0x38	; 56	'8'
+      00037B 44                     878 	.db #0x44	; 68	'D'
+      00037C 44                     879 	.db #0x44	; 68	'D'
+      00037D 44                     880 	.db #0x44	; 68	'D'
+      00037E 20                     881 	.db #0x20	; 32
+      00037F 00                     882 	.db #0x00	; 0
+      000380 38                     883 	.db #0x38	; 56	'8'
+      000381 44                     884 	.db #0x44	; 68	'D'
+      000382 44                     885 	.db #0x44	; 68	'D'
+      000383 48                     886 	.db #0x48	; 72	'H'
+      000384 7F                     887 	.db #0x7f	; 127
+      000385 00                     888 	.db #0x00	; 0
+      000386 38                     889 	.db #0x38	; 56	'8'
+      000387 54                     890 	.db #0x54	; 84	'T'
+      000388 54                     891 	.db #0x54	; 84	'T'
+      000389 54                     892 	.db #0x54	; 84	'T'
+      00038A 18                     893 	.db #0x18	; 24
+      00038B 00                     894 	.db #0x00	; 0
+      00038C 08                     895 	.db #0x08	; 8
+      00038D 7E                     896 	.db #0x7e	; 126
+      00038E 09                     897 	.db #0x09	; 9
+      00038F 01                     898 	.db #0x01	; 1
+      000390 02                     899 	.db #0x02	; 2
+      000391 00                     900 	.db #0x00	; 0
+      000392 18                     901 	.db #0x18	; 24
+      000393 A4                     902 	.db #0xa4	; 164
+      000394 A4                     903 	.db #0xa4	; 164
+      000395 A4                     904 	.db #0xa4	; 164
+      000396 7C                     905 	.db #0x7c	; 124
+      000397 00                     906 	.db #0x00	; 0
+      000398 7F                     907 	.db #0x7f	; 127
+      000399 08                     908 	.db #0x08	; 8
+      00039A 04                     909 	.db #0x04	; 4
+      00039B 04                     910 	.db #0x04	; 4
+      00039C 78                     911 	.db #0x78	; 120	'x'
+      00039D 00                     912 	.db #0x00	; 0
+      00039E 00                     913 	.db #0x00	; 0
+      00039F 44                     914 	.db #0x44	; 68	'D'
+      0003A0 7D                     915 	.db #0x7d	; 125
+      0003A1 40                     916 	.db #0x40	; 64
+      0003A2 00                     917 	.db #0x00	; 0
+      0003A3 00                     918 	.db #0x00	; 0
+      0003A4 40                     919 	.db #0x40	; 64
+      0003A5 80                     920 	.db #0x80	; 128
+      0003A6 84                     921 	.db #0x84	; 132
+      0003A7 7D                     922 	.db #0x7d	; 125
+      0003A8 00                     923 	.db #0x00	; 0
+      0003A9 00                     924 	.db #0x00	; 0
+      0003AA 7F                     925 	.db #0x7f	; 127
+      0003AB 10                     926 	.db #0x10	; 16
+      0003AC 28                     927 	.db #0x28	; 40
+      0003AD 44                     928 	.db #0x44	; 68	'D'
+      0003AE 00                     929 	.db #0x00	; 0
+      0003AF 00                     930 	.db #0x00	; 0
+      0003B0 00                     931 	.db #0x00	; 0
+      0003B1 41                     932 	.db #0x41	; 65	'A'
+      0003B2 7F                     933 	.db #0x7f	; 127
+      0003B3 40                     934 	.db #0x40	; 64
+      0003B4 00                     935 	.db #0x00	; 0
+      0003B5 00                     936 	.db #0x00	; 0
+      0003B6 7C                     937 	.db #0x7c	; 124
+      0003B7 04                     938 	.db #0x04	; 4
+      0003B8 18                     939 	.db #0x18	; 24
+      0003B9 04                     940 	.db #0x04	; 4
+      0003BA 78                     941 	.db #0x78	; 120	'x'
+      0003BB 00                     942 	.db #0x00	; 0
+      0003BC 7C                     943 	.db #0x7c	; 124
+      0003BD 08                     944 	.db #0x08	; 8
+      0003BE 04                     945 	.db #0x04	; 4
+      0003BF 04                     946 	.db #0x04	; 4
+      0003C0 78                     947 	.db #0x78	; 120	'x'
+      0003C1 00                     948 	.db #0x00	; 0
+      0003C2 38                     949 	.db #0x38	; 56	'8'
+      0003C3 44                     950 	.db #0x44	; 68	'D'
+      0003C4 44                     951 	.db #0x44	; 68	'D'
+      0003C5 44                     952 	.db #0x44	; 68	'D'
+      0003C6 38                     953 	.db #0x38	; 56	'8'
+      0003C7 00                     954 	.db #0x00	; 0
+      0003C8 FC                     955 	.db #0xfc	; 252
+      0003C9 24                     956 	.db #0x24	; 36
+      0003CA 24                     957 	.db #0x24	; 36
+      0003CB 24                     958 	.db #0x24	; 36
+      0003CC 18                     959 	.db #0x18	; 24
+      0003CD 00                     960 	.db #0x00	; 0
+      0003CE 18                     961 	.db #0x18	; 24
+      0003CF 24                     962 	.db #0x24	; 36
+      0003D0 24                     963 	.db #0x24	; 36
+      0003D1 18                     964 	.db #0x18	; 24
+      0003D2 FC                     965 	.db #0xfc	; 252
+      0003D3 00                     966 	.db #0x00	; 0
+      0003D4 7C                     967 	.db #0x7c	; 124
+      0003D5 08                     968 	.db #0x08	; 8
+      0003D6 04                     969 	.db #0x04	; 4
+      0003D7 04                     970 	.db #0x04	; 4
+      0003D8 08                     971 	.db #0x08	; 8
+      0003D9 00                     972 	.db #0x00	; 0
+      0003DA 48                     973 	.db #0x48	; 72	'H'
+      0003DB 54                     974 	.db #0x54	; 84	'T'
+      0003DC 54                     975 	.db #0x54	; 84	'T'
+      0003DD 54                     976 	.db #0x54	; 84	'T'
+      0003DE 20                     977 	.db #0x20	; 32
+      0003DF 00                     978 	.db #0x00	; 0
+      0003E0 04                     979 	.db #0x04	; 4
+      0003E1 3F                     980 	.db #0x3f	; 63
+      0003E2 44                     981 	.db #0x44	; 68	'D'
+      0003E3 40                     982 	.db #0x40	; 64
+      0003E4 20                     983 	.db #0x20	; 32
+      0003E5 00                     984 	.db #0x00	; 0
+      0003E6 3C                     985 	.db #0x3c	; 60
+      0003E7 40                     986 	.db #0x40	; 64
+      0003E8 40                     987 	.db #0x40	; 64
+      0003E9 20                     988 	.db #0x20	; 32
+      0003EA 7C                     989 	.db #0x7c	; 124
+      0003EB 00                     990 	.db #0x00	; 0
+      0003EC 1C                     991 	.db #0x1c	; 28
+      0003ED 20                     992 	.db #0x20	; 32
+      0003EE 40                     993 	.db #0x40	; 64
+      0003EF 20                     994 	.db #0x20	; 32
+      0003F0 1C                     995 	.db #0x1c	; 28
+      0003F1 00                     996 	.db #0x00	; 0
+      0003F2 3C                     997 	.db #0x3c	; 60
+      0003F3 40                     998 	.db #0x40	; 64
+      0003F4 30                     999 	.db #0x30	; 48	'0'
+      0003F5 40                    1000 	.db #0x40	; 64
+      0003F6 3C                    1001 	.db #0x3c	; 60
+      0003F7 00                    1002 	.db #0x00	; 0
+      0003F8 44                    1003 	.db #0x44	; 68	'D'
+      0003F9 28                    1004 	.db #0x28	; 40
+      0003FA 10                    1005 	.db #0x10	; 16
+      0003FB 28                    1006 	.db #0x28	; 40
+      0003FC 44                    1007 	.db #0x44	; 68	'D'
+      0003FD 00                    1008 	.db #0x00	; 0
+      0003FE 1C                    1009 	.db #0x1c	; 28
+      0003FF A0                    1010 	.db #0xa0	; 160
+      000400 A0                    1011 	.db #0xa0	; 160
+      000401 A0                    1012 	.db #0xa0	; 160
+      000402 7C                    1013 	.db #0x7c	; 124
+      000403 00                    1014 	.db #0x00	; 0
+      000404 44                    1015 	.db #0x44	; 68	'D'
+      000405 64                    1016 	.db #0x64	; 100	'd'
+      000406 54                    1017 	.db #0x54	; 84	'T'
+      000407 4C                    1018 	.db #0x4c	; 76	'L'
+      000408 44                    1019 	.db #0x44	; 68	'D'
+      000409 14                    1020 	.db #0x14	; 20
+      00040A 14                    1021 	.db #0x14	; 20
+      00040B 14                    1022 	.db #0x14	; 20
+      00040C 14                    1023 	.db #0x14	; 20
+      00040D 14                    1024 	.db #0x14	; 20
+      00040E 14                    1025 	.db #0x14	; 20
+                                   1026 	.area INITIALIZER
+                                   1027 	.area CABS (ABS)

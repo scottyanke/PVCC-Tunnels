@@ -1,0 +1,19 @@
+-muwx
+-i pvcc-tunnels.ihx
+-Y
+-b HOME = 0x8000
+-b DATA = 0x0001
+-b SSEG = 0xffffffff
+-k /home/scott/Samples/stm8-bare-min/stm8
+-k /usr/local/bin/../share/sdcc/lib/stm8
+-k /usr/local/share/sdcc/lib/stm8
+-l stm8
+-l stm8
+./src/delay.rel
+./src/i2c.rel
+./src/interrupts.rel
+./src/main.rel
+./src/mcp23017.rel
+./src/uart.rel
+
+-e
